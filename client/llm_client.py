@@ -23,7 +23,7 @@ class LLMClient:
     async def chat_completion(self, messages: list[dict[str, Any]], stream: bool = True):
         client = self.get_client()
         kwargs = {
-            "model": "openrouter/elephant-alpha",
+            "model": "inclusionai/ling-2.6-flash:free",
             "messages": messages,
             "stream": stream
         }
