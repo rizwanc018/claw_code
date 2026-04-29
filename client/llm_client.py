@@ -27,7 +27,7 @@ class LLMClient:
     async def chat_completion(self, messages: list[dict[str, Any]], stream: bool = True) -> AsyncGenerator[StreamEvent, None]:
         client = self.get_client()
         kwargs = {
-            "model": "inclusionai/ling-2.6-flash:free",
+            "model": "nvidia/nemotron-3-super-120b-a12b:free",
             "messages": messages,
             "stream": stream
         }
