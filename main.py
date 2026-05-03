@@ -1,24 +1,66 @@
 from typing import Any
-
-from client.llm_client import LLMClient
 import asyncio
 import click
 
-async def run(messages: dict[str, Any]):
-    client = LLMClient()
-    async for event in client.chat_completion(messages, True): # type: ignore
-        print(event, "\n")
+from agent.agent import Agent
+from agent.events import AgentEventType
+
+
+class CLI:
+    def __init__(self) -> None:
+        self.agent: Agent | None = None
+
+    async def run_single(self, message: str) -> str | None:
+        async with Agent(self.config) as agent:
+            self.agent = agent
+            return await self._process_message(message)
+        
+    async def _process_message(self, message: str) -> str | None:
+        if not self.agent:
+            return None
+        
+        # async for event in self.agent.run(message):
+        #     if event.type == AgentEventType.TEXT_DELTA:
+        #         content = event.data.get("content", "")
+        #         if not assistant_streaming:
+        #             self.tui.begin_assistant()
+        #             assistant_streaming = True
+        #         self.tui.stream_assistant_delta(content)
+        #     elif event.type == AgentEventType.TEXT_COMPLETE:
+        #         final_response = event.data.get("content")
+        #         if assistant_streaming:
+        #             self.tui.end_assistant()
+        #             assistant_streaming = False
+        #     elif event.type == AgentEventType.AGENT_ERROR:
+        #         error = event.data.get("error", "Unknown error")
+        #     elif event.type == AgentEventType.TOOL_CALL_START:
+        #         tool_name = event.data.get("name", "unknown")
+        #         tool_kind = self._get_tool_kind(tool_name)
+        #         self.tui.tool_call_start(
+        #             event.data.get("call_id", ""),
+        #             tool_name,
+        #             tool_kind,
+        #             event.data.get("arguments", {}),
+        #         )
+
+
+# async def run(messages: dict[str, Any]):
+#     client = LLMClient()
+#     async for event in client.chat_completion(messages, True):  # type: ignore
+#         print(event, "\n")
 
 
 @click.command()
 @click.argument("prompt", required=False)
 def main(prompt: str | None):
-    messages = [{
-        "role": "user",
-        "content": prompt
-    }]
-    asyncio.run(run(messages)) # type: ignore
-    print("done")
+    # messages = [{
+    #     "role": "user",
+    #     "content": prompt
+    # }]
+    cli = CLI()
+    if prompt:
+        asyncio.run(cli.run_single(prompt))
+
 
 main()
 # asyncio.run(main())
