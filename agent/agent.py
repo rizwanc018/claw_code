@@ -4,6 +4,7 @@ from agent.events import AgentEvent, AgentEventType
 from client.llm_client import LLMClient
 from client.response import StreamEventType
 
+
 class Agent:
     def __init__(self) -> None:
         self.client = LLMClient()
@@ -12,13 +13,15 @@ class Agent:
         yield AgentEvent.agent_start(message)
         # add message to context
 
+        final_response: str | None = None
+
         async for event in self._agentic_loop():
             yield event
 
             if event.type == AgentEventType.TEXT_COMPLETE:
-                final_respone = event.data.get("content")
+                final_response = event.data.get("content")
 
-        yield AgentEvent.agent_end(final_respone)
+        yield AgentEvent.agent_end(final_response)
 
     async def _agentic_loop(self) -> AsyncGenerator[AgentEvent, None]:
         messages = [{
@@ -42,7 +45,7 @@ class Agent:
             yield AgentEvent.text_complete(response_text)
 
     async def __aenter__(self) -> Agent:
-            return self
+        return self
 
     async def __aexit__(
         self,
