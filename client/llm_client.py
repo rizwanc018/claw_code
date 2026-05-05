@@ -2,7 +2,7 @@ import asyncio
 import re
 from typing import Any, AsyncGenerator
 from openai import APIConnectionError, APIError, AsyncOpenAI, RateLimitError
-from key import open_router_api_key
+from key import open_router_api_key, llm_model
 from client.response import TextDelta, TokenUsage, StreamEvent, StreamEventType
 
 
@@ -27,7 +27,7 @@ class LLMClient:
     async def chat_completion(self, messages: list[dict[str, Any]], stream: bool = True) -> AsyncGenerator[StreamEvent, None]:
         client = self.get_client()
         kwargs = {
-            "model": "nvidia/nemotron-3-super-120b-a12b:free",
+            "model": llm_model,
             "messages": messages,
             "stream": stream
         }
